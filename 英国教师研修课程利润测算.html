@@ -1,0 +1,564 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英国教师研修课程利润测算表</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f0f4f8;
+    color: #2d3748;
+    padding: 20px;
+    font-size: 14px;
+  }
+  h1 { font-size: 18px; font-weight: 700; color: #1a202c; margin-bottom: 20px; text-align: center; }
+
+  /* 一级大板块（全部统一样式） */
+  .main-section {
+    margin-bottom: 24px;
+  }
+  .main-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .main-title-income {
+    background: linear-gradient(90deg, #38a169, #48bb78);
+  }
+  .main-title-cost {
+    background: linear-gradient(90deg, #e53e3e, #f56565);
+  }
+  .main-title-headcount {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+  }
+  .main-title-result {
+    background: linear-gradient(90deg, #c53030, #e53e3e);
+  }
+  .main-title .dot { width: 8px; height: 8px; border-radius: 50%; background: white; }
+
+  /* 普通子板块 */
+  .section {
+    background: #fff; border-radius: 12px; padding: 20px;
+    margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .section-title {
+    font-size: 13px; font-weight: 700; color: #4a5568;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .param-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .param-grid { grid-template-columns: 1fr; } }
+  .param-item { display: flex; flex-direction: column; gap: 4px; }
+  .param-item label { font-size: 12px; color: #718096; font-weight: 500; }
+  .param-item input {
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: 8px 10px; font-size: 14px; color: #2d3748;
+    transition: border-color 0.2s; width: 100%;
+  }
+  .param-item input:focus { outline: none; border-color: #667eea; }
+  .input-prefix { position: relative; }
+  .input-prefix span {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); color: #a0aec0; font-size: 13px;
+  }
+  .input-prefix input { padding-left: 22px; }
+
+  /* 汇率行 */
+  .exchange-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px; padding: 10px 14px;
+    background: #fffaf0; border-radius: 8px; border: 1px solid #feebc8;
+    flex-wrap: wrap;
+  }
+  .exchange-row label { font-size: 12px; color: #744210; font-weight: 600; white-space: nowrap; }
+  .exchange-row input {
+    border: 1.5px solid #fbd38d; border-radius: 6px;
+    padding: 5px 8px; font-size: 14px; width: 75px;
+    color: #2d3748; background: white;
+  }
+  .exchange-row input:focus { outline: none; border-color: #d69e2e; }
+  .exchange-row .hint { font-size: 11px; color: #a0aec0; }
+
+  /* 英国费用表 */
+  .uk-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .uk-table th {
+    font-size: 11px; color: #718096; font-weight: 600;
+    text-align: left; padding: 7px 8px; background: #f7fafc;
+  }
+  .uk-table th:last-child { text-align: right; }
+  .uk-table td {
+    padding: 7px 8px; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px; vertical-align: middle;
+  }
+  .uk-table tr:last-child td { border-bottom: none; }
+  .uk-table .hn { font-weight: 600; color: #4a5568; white-space: nowrap; }
+  .uk-table input {
+    border: 1.5px solid #e2e8f0; border-radius: 6px;
+    padding: 5px 7px; font-size: 13px; width: 85px; color: #2d3748;
+  }
+  .uk-table input:focus { outline: none; border-color: #3182ce; }
+  .uk-table .rmb { color: #e53e3e; font-weight: 600; font-size: 12px; text-align: right; }
+  .uk-table tr.active-row { background: #ebf8ff; }
+  .uk-table tr.active-row .hn { color: #2b6cb0; }
+
+  /* 人数滑块 */
+  .headcount-row { display: flex; align-items: center; gap: 12px; }
+  .headcount-row label { font-size: 13px; font-weight: 600; color: #4a5568; white-space: nowrap; }
+  .headcount-row input[type=range] { flex: 1; accent-color: #667eea; }
+  .headcount-value { font-size: 26px; font-weight: 800; color: #667eea; min-width: 36px; text-align: right; }
+  .slider-ticks {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: #cbd5e0; margin-top: 3px; padding: 0 1px;
+  }
+
+  /* 结果卡片 */
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 400px) { .result-grid { grid-template-columns: 1fr; } }
+  .result-card { background: #f7fafc; border-radius: 10px; padding: 14px; text-align: center; }
+  .result-card .label { font-size: 11px; color: #718096; margin-bottom: 4px; }
+  .result-card .value { font-size: 18px; font-weight: 700; color: #2d3748; }
+  .result-card.profit-card { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .result-card.profit-card .label { color: rgba(255,255,255,0.8); }
+  .result-card.profit-card .value { color: white; font-size: 22px; }
+
+  /* 明细表 */
+  .breakdown-table { width: 100%; border-collapse: collapse; }
+  .breakdown-table td {
+    padding: 9px 6px; border-bottom: 1px solid #f0f0f0; font-size: 13px;
+  }
+  .breakdown-table tr:last-child td { border-bottom: none; }
+  .breakdown-table td:first-child { color: #718096; }
+  .breakdown-table td:last-child { text-align: right; font-weight: 600; }
+  .breakdown-table .revenue-item td:last-child { color: #38a169; }
+  .breakdown-table .cost-item td:last-child { color: #e53e3e; }
+  .breakdown-table .subtotal td {
+    font-weight: 700; color: #2d3748; background: #f7fafc;
+    padding: 10px 8px;
+  }
+  .formula { font-size: 11px; color: #a0aec0; font-weight: 400; display: block; margin-top: 2px; }
+  .tag {
+    display: inline-block; font-size: 10px; border-radius: 3px;
+    padding: 1px 5px; margin-left: 4px; font-weight: 600;
+  }
+  .tag-on { background: #c6f6d5; color: #276749; }
+  .tag-off { background: #fed7d7; color: #9b2c2c; }
+  .note { font-size: 11px; color: #a0aec0; text-align: center; margin-top: 12px; }
+  .cap-note {
+    font-size: 11px; color: #e53e3e; margin-top: 10px;
+    padding: 6px 10px; background: #fff5f5;
+    border-radius: 6px; border-left: 3px solid #fc8181;
+  }
+  /* 渠道费开关样式 */
+  .switch-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+  }
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e2e8f0;
+    transition: .4s;
+    border-radius: 20px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  input:checked + .slider {
+    background-color: #667eea;
+  }
+  input:checked + .slider:before {
+    transform: translateX(20px);
+  }
+</style>
+</head>
+<body>
+
+<h1>📊 英国教师研修课程利润测算</h1>
+
+<!-- ====================== 项目收入（一级大板块） ====================== -->
+<div class="main-section">
+  <div class="main-title main-title-income">
+    <div class="dot"></div> 项目收入
+  </div>
+  <div class="section">
+    <div class="param-grid">
+      <div class="param-item">
+        <label>每位学员收费（元）</label>
+        <div class="input-prefix">
+          <span>¥</span>
+          <input type="number" id="feePerPerson" value="33800" min="0" oninput="calculate()">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== 项目成本（一级大板块） ====================== -->
+<div class="main-section">
+  <div class="main-title main-title-cost">
+    <div class="dot"></div> 项目成本
+  </div>
+
+  <!-- 子板块1：支付英方费用 -->
+  <div class="section">
+    <div class="section-title"><div class="dot" style="background:#3182ce"></div>支付英方费用</div>
+    <div class="exchange-row">
+      <label>💱 英镑汇率 &nbsp;1 GBP =</label>
+      <input type="number" id="exchangeRate" value="9.10" step="0.01" min="1" oninput="calculate()">
+      <span style="font-size:13px;color:#744210;">元人民币</span>
+      <span class="hint">可随时调整</span>
+    </div>
+    <table class="uk-table">
+      <thead>
+        <tr>
+          <th>人数</th>
+          <th>每人英镑（£，可编辑）</th>
+          <th>每人人民币（换算后）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="ukRow8">
+          <td class="hn">8 人</td>
+          <td><input type="number" id="ukGBP8" value="2294" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB8">-</td>
+        </tr>
+        <tr id="ukRow9">
+          <td class="hn">9 人</td>
+          <td><input type="number" id="ukGBP9" value="2194" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB9">-</td>
+        </tr>
+        <tr id="ukRow10">
+          <td class="hn">10 人</td>
+          <td><input type="number" id="ukGBP10" value="2094" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB10">-</td>
+        </tr>
+        <tr id="ukRow11">
+          <td class="hn">11 人</td>
+          <td><input type="number" id="ukGBP11" value="1978" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB11">-</td>
+        </tr>
+        <tr id="ukRow12">
+          <td class="hn">12 人</td>
+          <td><input type="number" id="ukGBP12" value="1881" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB12">-</td>
+        </tr>
+        <tr id="ukRow13">
+          <td class="hn">13 人</td>
+          <td><input type="number" id="ukGBP13" value="1799" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB13">-</td>
+        </tr>
+        <tr id="ukRow14">
+          <td class="hn">14 人</td>
+          <td><input type="number" id="ukGBP14" value="1728" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB14">-</td>
+        </tr>
+        <tr id="ukRow1518">
+          <td class="hn">15–18 人</td>
+          <td><input type="number" id="ukGBP1518" value="1669" min="0" oninput="calculate()"></td>
+          <td class="rmb" id="ukRMB1518">-</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="cap-note">⚠️ 英国方最多接受 18 人，超过 18 人无法成团</p>
+  </div>
+
+  <!-- 子板块2：渠道招生费用 -->
+  <div class="section">
+    <div class="section-title"><div class="dot" style="background:#d69e2e"></div>渠道招生费用</div>
+    <div class="switch-item">
+      <label style="font-size:12px;color:#4a5568;font-weight:600;">是否启用渠道费</label>
+      <label class="switch">
+        <input type="checkbox" id="channelFeeSwitch" checked onchange="calculate()">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div style="display:flex;gap:12px; margin-bottom:10px;">
+      <div class="param-item" style="flex:1;">
+        <label>5-10人部分费率</label>
+        <div class="input-prefix">
+          <span>%</span>
+          <input type="number" id="rate1" value="15" min="0" max="100" oninput="calculate()">
+        </div>
+      </div>
+      <div class="param-item" style="flex:1;">
+        <label>10人以上部分费率</label>
+        <div class="input-prefix">
+          <span>%</span>
+          <input type="number" id="rate2" value="20" min="0" max="100" oninput="calculate()">
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#718096;">4人及以内不收费 · 5-10人按费率A · 超过10人按费率B</p>
+  </div>
+
+  <!-- 子板块3：领队成本 -->
+  <div class="section">
+    <div class="section-title"><div class="dot" style="background:#805ad5"></div>领队成本</div>
+    <div class="param-grid">
+      <div class="param-item">
+        <label>领队总成本（元）<span style="font-size:10px;color:#a0aec0;font-weight:normal;">（含往返国际机票、餐费、交通费及其他公杂费）</span></label>
+        <div class="input-prefix"><span>¥</span>
+          <input type="number" id="leaderCost" value="20000" min="0" oninput="calculate()">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== 预计报名人数（一级大板块） ====================== -->
+<div class="main-section">
+  <div class="main-title main-title-headcount">
+    <div class="dot"></div> 预计报名人数
+  </div>
+  <div class="section">
+    <div class="headcount-row">
+      <label>人数</label>
+      <input type="range" id="headcount" min="8" max="18" value="12" oninput="syncHeadcount(this.value)">
+      <div class="headcount-value" id="headcountDisplay">12</div>
+      <span style="font-size:12px;color:#a0aec0">人</span>
+    </div>
+    <div class="slider-ticks">
+      <span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+      <span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span>
+    </div>
+    <div style="margin-top:10px;text-align:right;">
+      <input type="number" id="headcountInput" value="12" min="8" max="18" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 10px;width:80px;font-size:14px;text-align:center;" oninput="syncHeadcountFromInput(this.value)">
+      <span style="font-size:12px;color:#a0aec0;margin-left:6px;">有效范围：8–18 人</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== 测算结果（一级大板块） ====================== -->
+<div class="main-section">
+  <div class="main-title main-title-result">
+    <div class="dot"></div> 测算结果
+  </div>
+  <div class="section">
+    <div class="result-grid">
+      <div class="result-card">
+        <div class="label">总收入</div>
+        <div class="value" id="resRevenue" style="color:#38a169;">-</div>
+      </div>
+      <div class="result-card">
+        <div class="label">总成本</div>
+        <div class="value" id="resTotalCost" style="color:#e53e3e;">-</div>
+      </div>
+      <div class="result-card profit-card" id="profitCard">
+        <div class="label">净利润</div>
+        <div class="value" id="resProfit">-</div>
+      </div>
+      <div class="result-card profit-card" id="marginCard">
+        <div class="label">利润率</div>
+        <div class="value" id="resMargin">-</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <div style="font-size:13px;font-weight:700;color:#4a5568;margin-bottom:10px;">📄 细项说明</div>
+      <table class="breakdown-table">
+        <tbody>
+          <tr class="subtotal">
+            <td>🔹 总收入合计</td>
+            <td id="bdRevenueTotal">-</td>
+          </tr>
+          <tr class="revenue-item">
+            <td>学员收费明细 <span class="formula" id="bdRevenueFormula"></span></td>
+            <td id="bdRevenue">-</td>
+          </tr>
+
+          <tr style="height:8px;background:transparent;"></tr>
+
+          <tr class="subtotal">
+            <td>🔹 总成本合计</td>
+            <td id="bdCostTotal">-</td>
+          </tr>
+          <tr class="cost-item">
+            <td>支付英方费用 <span class="tag tag-on" id="bdUkTier"></span> <span class="formula" id="bdUkFormula"></span></td>
+            <td id="bdUkCost">-</td>
+          </tr>
+          <tr class="cost-item">
+            <td>渠道招生费用 <span class="tag" id="bdChannelTier"></span> <span class="formula" id="bdChannelFormula"></span></td>
+            <td id="bdChannelCost">-</td>
+          </tr>
+          <tr class="cost-item">
+            <td>领队成本（固定）</td>
+            <td id="bdLeaderCost">-</td>
+          </tr>
+
+          <tr style="height:8px;background:transparent;"></tr>
+
+          <tr class="subtotal">
+            <td>🔹 最终净利润</td>
+            <td id="bdProfitTotal">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">💡 修改上方任意参数，结果实时更新</p>
+  </div>
+</div>
+
+<script>
+function fmt(n) {
+  if (n === null || n === undefined) return '-';
+  const sign = n < 0 ? '-' : '';
+  const abs = Math.abs(n);
+  if (abs >= 10000) {
+    return sign + (abs / 10000).toFixed(2) + ' 万元';
+  }
+  return sign + abs.toLocaleString('zh-CN') + ' 元';
+}
+
+function getUkGBP(n) {
+  const map = { 8:'ukGBP8', 9:'ukGBP9', 10:'ukGBP10', 11:'ukGBP11', 12:'ukGBP12', 13:'ukGBP13', 14:'ukGBP14' };
+  if (n >= 8 && n <= 14) return parseFloat(document.getElementById(map[n]).value) || 0;
+  if (n >= 15 && n <= 18) return parseFloat(document.getElementById('ukGBP1518').value) || 0;
+  return 0;
+}
+
+function syncHeadcount(val) {
+  const v = parseInt(val);
+  document.getElementById('headcountDisplay').textContent = v;
+  document.getElementById('headcountInput').value = v;
+  calculate();
+}
+
+function syncHeadcountFromInput(val) {
+  let n = parseInt(val) || 8;
+  n = Math.min(Math.max(n, 8), 18);
+  document.getElementById('headcountDisplay').textContent = n;
+  document.getElementById('headcount').value = n;
+  document.getElementById('headcountInput').value = n;
+  calculate();
+}
+
+function calculate() {
+  const feePerPerson  = parseFloat(document.getElementById('feePerPerson').value)  || 0;
+  const exchangeRate  = parseFloat(document.getElementById('exchangeRate').value)   || 9.10;
+  const leaderCost    = parseFloat(document.getElementById('leaderCost').value)     || 0;
+  const headcount     = parseInt(document.getElementById('headcount').value)        || 8;
+  const channelEnabled = document.getElementById('channelFeeSwitch').checked;
+  const rate1 = parseFloat(document.getElementById('rate1').value || 15) / 100;
+  const rate2 = parseFloat(document.getElementById('rate2').value || 20) / 100;
+
+  // 更新英国费表格每行的人民币换算 & 高亮当前人数
+  [8,9,10,11,12,13,14].forEach(n => {
+    const gbp = parseFloat(document.getElementById('ukGBP'+n).value) || 0;
+    document.getElementById('ukRMB'+n).textContent = '≈ ¥' + Math.round(gbp * exchangeRate).toLocaleString('zh-CN');
+    document.getElementById('ukRow'+n).classList.toggle('active-row', headcount === n);
+  });
+  const gbp1518 = parseFloat(document.getElementById('ukGBP1518').value) || 0;
+  document.getElementById('ukRMB1518').textContent = '≈ ¥' + Math.round(gbp1518 * exchangeRate).toLocaleString('zh-CN');
+  document.getElementById('ukRow1518').classList.toggle('active-row', headcount >= 15 && headcount <= 18);
+
+  // 收入
+  const revenue = feePerPerson * headcount;
+
+  // 英国方费用
+  const ukGBP = getUkGBP(headcount);
+  const ukCostTotal = Math.round(ukGBP * exchangeRate * headcount);
+  let ukTierLabel = '';
+  if (headcount >=8 && headcount <=14) {
+    ukTierLabel = headcount + '人单价';
+  } else if (headcount >=15 && headcount <=18) {
+    ukTierLabel = '15–18人档';
+  }
+
+  // 渠道费用 —— 阶梯计费
+  let channelCostTotal = 0;
+  let channelTierLabel = '';
+  let channelFormula = '';
+  
+  if (channelEnabled) {
+    if (headcount <= 4) {
+      channelTierLabel = '4人以内·免费';
+      channelCostTotal = 0;
+    } else {
+      const num1 = Math.min(headcount, 10) - 4;
+      const num2 = Math.max(headcount - 10, 0);
+      const cost1 = num1 * feePerPerson * rate1;
+      const cost2 = num2 * feePerPerson * rate2;
+      channelCostTotal = Math.round(cost1 + cost2);
+
+      channelTierLabel = `阶梯计费`;
+      channelFormula = `${num1}人×${(rate1*100).toFixed(0)}% + ${num2}人×${(rate2*100).toFixed(0)}%`;
+    }
+  } else {
+    channelTierLabel = '未启用·免费';
+    channelCostTotal = 0;
+  }
+
+  // 汇总
+  const totalCost = ukCostTotal + channelCostTotal + leaderCost;
+  const profit    = revenue - totalCost;
+  const margin    = revenue > 0 ? (profit / revenue * 100).toFixed(1) : '0.0';
+
+  // 结果卡片
+  document.getElementById('resRevenue').textContent   = fmt(revenue);
+  document.getElementById('resTotalCost').textContent = fmt(totalCost);
+  document.getElementById('resProfit').textContent    = fmt(profit);
+  document.getElementById('resMargin').textContent    = margin + '%';
+
+  const pc = document.getElementById('profitCard');
+  const mc = document.getElementById('marginCard');
+  pc.style.background = mc.style.background = profit < 0
+    ? 'linear-gradient(135deg, #fc8181, #e53e3e)'
+    : 'linear-gradient(135deg, #667eea, #764ba2)';
+
+  // 明细展示（先总后分）
+  document.getElementById('bdRevenueTotal').textContent   = fmt(revenue);
+  document.getElementById('bdRevenueFormula').textContent = `¥${feePerPerson.toLocaleString()} × ${headcount} 人`;
+  document.getElementById('bdRevenue').textContent        = fmt(revenue);
+
+  document.getElementById('bdCostTotal').textContent  = fmt(totalCost);
+  document.getElementById('bdUkTier').textContent    = ukTierLabel;
+  document.getElementById('bdUkFormula').textContent = `£${ukGBP} × 汇率${exchangeRate} × ${headcount} 人`;
+  document.getElementById('bdUkCost').textContent    = '-' + fmt(ukCostTotal);
+
+  document.getElementById('bdChannelTier').textContent   = channelTierLabel;
+  document.getElementById('bdChannelTier').className     = 'tag ' + (channelCostTotal > 0 ? 'tag-on' : 'tag-off');
+  document.getElementById('bdChannelFormula').textContent = channelFormula;
+  document.getElementById('bdChannelCost').textContent   = channelCostTotal > 0 ? '-' + fmt(channelCostTotal) : '¥0';
+
+  document.getElementById('bdLeaderCost').textContent = '-' + fmt(leaderCost);
+  document.getElementById('bdProfitTotal').textContent = fmt(profit);
+}
+
+calculate();
+</script>
+</body></html>
